@@ -70,7 +70,9 @@
 	  var nodes = graph.nodes;
 	  var links = graph.links;
 	
-	  simulation.nodes(nodes).links(links).force("link").on("tick", ticked);
+	  simulation.nodes(nodes).on("tick", ticked);
+	
+	  simulation.force("link").links(links);
 	
 	  d3.select(canvas).call(d3.drag().container(canvas).subject(dragsubject).on("start", dragstarted).on("drag", dragged).on("end", dragended));
 	

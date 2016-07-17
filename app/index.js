@@ -19,9 +19,11 @@ d3.json("https://raw.githubusercontent.com/DealPete/forceDirected/master/countri
 
   simulation
     .nodes(nodes)
-    .links(links)
+    .on("tick", ticked);
+
+  simulation
     .force("link")
-    .on("tick", ticked)
+    .links(links);
 
   d3.select(canvas)
     .call(d3.drag()
