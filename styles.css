@@ -1,12 +1,18 @@
+body {
+  background-color: #232528;
+  color: #ffa400; }
+
 .app {
   width: 900px; }
 
 .tooltip {
   position: absolute;
   pointer-events: none;
-  color: #ffa400;
+  color: #eaf6ff;
+  font-size: 1.2em;
   background: #232528;
   padding: 5px 10px;
+  border: 1px solid #ffa400;
   border-radius: 5px; }
 
 /*# sourceMappingURL=styles.css.map*/

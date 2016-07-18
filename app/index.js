@@ -325,10 +325,10 @@ const showTooltip = (event) => {
   const subject = simulation.find(event.x - width / 2 - rect.left, event.y - height / 2 - rect.top, 10)
   if (subject) {
     tooltip.html(subject.country)
-    const width = tooltip.node().getBoundingClientRect().width
+    const tooltipRect = tooltip.node().getBoundingClientRect()
     tooltip
-      .style('left', (event.x - width / 2) + 'px')
-      .style('top', (event.y - rect.top + 35) + 'px')
+      .style('left', (event.x - tooltipRect.width / 2) + 'px')
+      .style('top', (event.y - rect.top + tooltipRect.height - 7) + 'px')
       .style('opacity', 1)
   } else {
     tooltip.style('opacity', 0)

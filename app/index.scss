@@ -7,7 +7,8 @@ $color6: #99d8c9;
 $color7: #e5f5f9;
 
 body {
-
+  background-color: $color4;
+  color: $color1;
 }
 
 .app {
@@ -21,8 +22,10 @@ canvas {
 .tooltip {
   position: absolute;
   pointer-events: none;
-  color: $color1;
+  color: $color5;
+  font-size: 1.2em;
   background: $color4;
   padding: 5px 10px;
+  border: 1px solid $color1;
   border-radius: 5px;
 }
