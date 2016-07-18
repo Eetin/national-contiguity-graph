@@ -17,3 +17,12 @@ body {
 canvas {
 
 }
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  color: $color1;
+  background: $color4;
+  padding: 5px 10px;
+  border-radius: 5px;
+}

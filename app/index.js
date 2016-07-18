@@ -264,23 +264,28 @@ const spritePositions = {
   'zw': { x: 208, y: 165 }
 }
 
-let flags = new Image()
+const tooltip = d3.select('body').append('div')
+  .classed('tooltip', true)
+  .style('opacity', 0)
+
+const flags = new Image()
 flags.src = 'https://dl.dropboxusercontent.com/s/z3y2giip5o29esl/flags_small.png'
 
-let simulation = d3.forceSimulation()
+const simulation = d3.forceSimulation()
   .force('charge', d3.forceManyBody().strength(-90))
   .force('link', d3.forceLink().id(function(d, i) { return i }).distance(50))
   .force('x', d3.forceX())
   .force('y', d3.forceY())
 
-d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json', function(error, graph) {
+d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json', (error, graph) => {
   if (error) throw error
 
   const nodes = graph.nodes
   const links = graph.links
 
-  const ticked = () => {
+  const dragsubject = () => simulation.find(d3.event.x - width / 2, d3.event.y - height / 2, 10)
 
+  const ticked = () => {
     context.clearRect(0, 0, width, height)
     context.save()
     context.translate(width / 2, height / 2)
@@ -295,8 +300,6 @@ d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countri
     context.restore()
   }
 
-  const dragsubject = () => simulation.find(d3.event.x - width / 2, d3.event.y - height / 2)
-
   simulation
     .nodes(nodes)
     .on('tick', ticked)
@@ -305,6 +308,8 @@ d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countri
     .force('link')
     .links(links)
 
+  d3.select(window).on('mousemove', showTooltip)
+
   d3.select(canvas)
     .call(d3.drag()
       .container(canvas)
@@ -312,13 +317,37 @@ d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countri
       .on('start', dragstarted)
       .on('drag', dragged)
       .on('end', dragended))
-
 })
+
+const showTooltip = (event) => {
+  event = event || d3.event
+  const rect = canvas.getBoundingClientRect()
+  const subject = simulation.find(event.x - width / 2 - rect.left, event.y - height / 2 - rect.top, 10)
+  if (subject) {
+    tooltip.html(subject.country)
+    const width = tooltip.node().getBoundingClientRect().width
+    tooltip
+      .style('left', (event.x - width / 2) + 'px')
+      .style('top', (event.y - rect.top + 35) + 'px')
+      .style('opacity', 1)
+  } else {
+    tooltip.style('opacity', 0)
+  }
+}
+
+const hideTooltip = () => {
+  tooltip.style('opacity', 0)
+}
+
+const showTooltipBuilder = (event) => {
+  return () => showTooltip(event)
+}
 
 const dragstarted = () => {
   if (!d3.event.active) simulation.alphaTarget(0.3).restart()
   d3.event.subject.fx = d3.event.subject.x
   d3.event.subject.fy = d3.event.subject.y
+  hideTooltip()
 }
 
 const dragged = () => {
@@ -330,6 +359,11 @@ const dragended = () => {
   if (!d3.event.active) simulation.alphaTarget(0)
   d3.event.subject.fx = null
   d3.event.subject.fy = null
+  const callback = showTooltipBuilder(d3.event)
+  const t = d3.timer((elapsed) => {
+    if (elapsed > 100) t.stop()
+    callback()
+  })
 }
 
 const drawLink = (d) => {

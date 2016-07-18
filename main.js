@@ -319,6 +319,8 @@
 	  'zw': { x: 208, y: 165 }
 	};
 	
+	var tooltip = d3.select('body').append('div').classed('tooltip', true).style('opacity', 0);
+	
 	var flags = new Image();
 	flags.src = 'https://dl.dropboxusercontent.com/s/z3y2giip5o29esl/flags_small.png';
 	
@@ -332,8 +334,11 @@
 	  var nodes = graph.nodes;
 	  var links = graph.links;
 	
-	  var ticked = function ticked() {
+	  var dragsubject = function dragsubject() {
+	    return simulation.find(d3.event.x - width / 2, d3.event.y - height / 2, 10);
+	  };
 	
+	  var ticked = function ticked() {
 	    context.clearRect(0, 0, width, height);
 	    context.save();
 	    context.translate(width / 2, height / 2);
@@ -348,21 +353,43 @@
 	    context.restore();
 	  };
 	
-	  var dragsubject = function dragsubject() {
-	    return simulation.find(d3.event.x - width / 2, d3.event.y - height / 2);
-	  };
-	
 	  simulation.nodes(nodes).on('tick', ticked);
 	
 	  simulation.force('link').links(links);
 	
+	  d3.select(window).on('mousemove', showTooltip);
+	
 	  d3.select(canvas).call(d3.drag().container(canvas).subject(dragsubject).on('start', dragstarted).on('drag', dragged).on('end', dragended));
 	});
+	
+	var showTooltip = function showTooltip(event) {
+	  event = event || d3.event;
+	  var rect = canvas.getBoundingClientRect();
+	  var subject = simulation.find(event.x - width / 2 - rect.left, event.y - height / 2 - rect.top, 10);
+	  if (subject) {
+	    tooltip.html(subject.country);
+	    var _width = tooltip.node().getBoundingClientRect().width;
+	    tooltip.style('left', event.x - _width / 2 + 'px').style('top', event.y - rect.top + 35 + 'px').style('opacity', 1);
+	  } else {
+	    tooltip.style('opacity', 0);
+	  }
+	};
+	
+	var hideTooltip = function hideTooltip() {
+	  tooltip.style('opacity', 0);
+	};
+	
+	var showTooltipBuilder = function showTooltipBuilder(event) {
+	  return function () {
+	    return showTooltip(event);
+	  };
+	};
 	
 	var dragstarted = function dragstarted() {
 	  if (!d3.event.active) simulation.alphaTarget(0.3).restart();
 	  d3.event.subject.fx = d3.event.subject.x;
 	  d3.event.subject.fy = d3.event.subject.y;
+	  hideTooltip();
 	};
 	
 	var dragged = function dragged() {
@@ -374,6 +401,11 @@
 	  if (!d3.event.active) simulation.alphaTarget(0);
 	  d3.event.subject.fx = null;
 	  d3.event.subject.fy = null;
+	  var callback = showTooltipBuilder(d3.event);
+	  var t = d3.timer(function (elapsed) {
+	    if (elapsed > 100) t.stop();
+	    callback();
+	  });
 	};
 	
 	var drawLink = function drawLink(d) {
