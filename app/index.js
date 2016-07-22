@@ -268,14 +268,16 @@ const tooltip = d3.select('body').append('div')
   .classed('tooltip', true)
   .style('opacity', 0)
 
-const flags = new Image()
-flags.src = 'https://dl.dropboxusercontent.com/s/z3y2giip5o29esl/flags_small.png'
-
 const simulation = d3.forceSimulation()
+  .stop()
   .force('charge', d3.forceManyBody().strength(-90))
   .force('link', d3.forceLink().id(function(d, i) { return i }).distance(50))
   .force('x', d3.forceX())
   .force('y', d3.forceY())
+
+const flags = new Image()
+flags.onload = () => simulation.restart()
+flags.src = 'https://dl.dropboxusercontent.com/s/z3y2giip5o29esl/flags_small.png'
 
 d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json', (error, graph) => {
   if (error) throw error
