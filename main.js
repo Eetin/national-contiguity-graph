@@ -368,11 +368,11 @@
 	var showTooltip = function showTooltip(event) {
 	  event = event || d3.event;
 	  var rect = canvas.getBoundingClientRect();
-	  var subject = simulation.find(event.x - width / 2 - rect.left, event.y - height / 2 - rect.top, 10);
+	  var subject = simulation.find(event.clientX - width / 2 - rect.left, event.clientY - height / 2 - rect.top, 10);
 	  if (subject) {
 	    tooltip.html(subject.country);
 	    var tooltipRect = tooltip.node().getBoundingClientRect();
-	    tooltip.style('left', event.x - tooltipRect.width / 2 + 'px').style('top', event.y - rect.top + tooltipRect.height - 7 + 'px').style('opacity', 1);
+	    tooltip.style('left', event.clientX - tooltipRect.width / 2 + 'px').style('top', event.clientY - rect.top + tooltipRect.height - 7 + 'px').style('opacity', 1);
 	  } else {
 	    tooltip.style('opacity', 0);
 	  }

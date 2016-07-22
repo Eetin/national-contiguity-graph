@@ -324,13 +324,13 @@ d3.json('https://raw.githubusercontent.com/DealPete/forceDirected/master/countri
 const showTooltip = (event) => {
   event = event || d3.event
   const rect = canvas.getBoundingClientRect()
-  const subject = simulation.find(event.x - width / 2 - rect.left, event.y - height / 2 - rect.top, 10)
+  const subject = simulation.find(event.clientX - width / 2 - rect.left, event.clientY - height / 2 - rect.top, 10)
   if (subject) {
     tooltip.html(subject.country)
     const tooltipRect = tooltip.node().getBoundingClientRect()
     tooltip
-      .style('left', (event.x - tooltipRect.width / 2) + 'px')
-      .style('top', (event.y - rect.top + tooltipRect.height - 7) + 'px')
+      .style('left', (event.clientX - tooltipRect.width / 2) + 'px')
+      .style('top', (event.clientY - rect.top + tooltipRect.height - 7) + 'px')
       .style('opacity', 1)
   } else {
     tooltip.style('opacity', 0)
